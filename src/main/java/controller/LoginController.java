@@ -1,7 +1,7 @@
 package controller;
 
-import filereader.TextReader;
 import model.User;
+import model.UserRepository;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -26,17 +26,9 @@ public class LoginController{
     public void performLoginAttempt (String userName, String password) throws IOException {
 
         User user = new User(userName, password);
-        TextReader tx = new TextReader("public/users.txt");
-        List<String> users = tx.returnAsList();
+        UserRepository repo = new UserRepository();
 
-        boolean loginIsValid = false;
-
-        for (int i = 0; i < users.size(); i = i + 2) {
-            if (users.get(i).equals(user.getUserName()) & users.get(i + 1).equals(user.getPassword())){
-                loginIsValid = true;
-                break;
-            }
-        }
+        boolean loginIsValid = repo.getAll().containsValue(user);
 
         for (LoginObs obs: observer
         ) {
