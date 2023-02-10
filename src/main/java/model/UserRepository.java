@@ -11,25 +11,21 @@ import java.util.Map;
 
 public class UserRepository {
 
-    private final Map<Integer, User> users;
+    private final Map<Integer, UserEntity> users;
 
     public UserRepository() throws IOException {
         TextReader tx = new TextReader("public/users.txt");
         List<String> data = tx.returnAsList();
         this.users = new HashMap<>(data.size()/3);
         for (int i = 0; i < data.size(); i = i+3) {
-            this.users.put(Integer.valueOf(data.get(i)), new User(data.get(i+1), data.get(i+2)));
+            this.users.put(Integer.valueOf(data.get(i)), new UserEntity(data.get(i+1), data.get(i+2)));
         }
     }
 
-    public Map<Integer, User> getAll(){
+    public Map<Integer, UserEntity> getAll(){
         return users;
     }
-
-    public User getByID(int key){
-        return users.get(key);
-    }
-
+    
     public static class TextReader {
         private final String filepath;
         private BufferedReader file;

@@ -1,18 +1,21 @@
 package view;
 
 import controller.LoginController;
-import controller.LoginObs;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.io.IOException;
 
-public class LoginView extends JFrame implements LoginObs {
+public class LoginView extends JFrame implements LoginObserver {
 
     protected static JPanel content_pane = new JPanel();
     protected static JLabel msg;
     protected static JPasswordField passwordField;
+    protected static JTextField userTextInput;
     protected static LoginController controller;
+
+    protected static JButton jButton_ok;
 
     public LoginView() {
         loadStructures();
@@ -21,14 +24,15 @@ public class LoginView extends JFrame implements LoginObs {
         content_pane.updateUI();
     }
 
-    void loadStructures(){
+    void loadStructures() {
         controller = LoginController.getInstance();
         controller.attach(this);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        setSize(new Dimension(300,300));
+        setSize(new Dimension(300, 300));
         setLocationRelativeTo(this);
         setVisible(true);
     }
+
     void loadElements() {
 
         content_pane.setLayout(new GridBagLayout());
@@ -59,7 +63,7 @@ public class LoginView extends JFrame implements LoginObs {
 
         gbc.gridy = 1;
         gbc.gridx = 1;
-        JTextField userTextInput = new JTextField(13);
+        userTextInput = new JTextField(13);
         content_pane.add(userTextInput, gbc);
 
         gbc.gridy = 2;
@@ -76,11 +80,10 @@ public class LoginView extends JFrame implements LoginObs {
         gbc.gridx = 2;
         gbc.gridwidth = 2;
         JRadioButton showPasswordBtn = new JRadioButton();
-        showPasswordBtn.addActionListener(evt ->{
-            if(showPasswordBtn.isSelected()){
+        showPasswordBtn.addActionListener(evt -> {
+            if (showPasswordBtn.isSelected()) {
                 passwordField.setEchoChar((char) 0);
-            }
-            else{
+            } else {
                 passwordField.setEchoChar('*');
             }
 
@@ -94,15 +97,15 @@ public class LoginView extends JFrame implements LoginObs {
 
         JPanel buttonPanel = new JPanel();
 
-        JButton okbtn = new JButton("OK");
-        okbtn.addActionListener(evt ->{
+        jButton_ok = new JButton("OK");
+        jButton_ok.addActionListener(evt -> {
             try {
-                LoginController.getInstance().performLoginAttempt(userTextInput.getText() , passwordField.getText());
+                LoginController.getInstance().performLoginAttempt(userTextInput.getText(), new String(passwordField.getPassword()));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         });
-        buttonPanel.add(okbtn);
+        buttonPanel.add(jButton_ok);
         content_pane.add(buttonPanel, gbc);
 
         gbc.insets = new Insets(3, 3, 3, 3);
@@ -122,12 +125,12 @@ public class LoginView extends JFrame implements LoginObs {
 
     @Override
     public void performLoginAttempt(boolean result) {
-        if(result){
+        if (result) {
             this.dispose();
             new CEPSearchView();
-        }
-        else{
+        } else {
             msg.setText("Senha/Usuário incorretos..");
         }
     }
+
 }

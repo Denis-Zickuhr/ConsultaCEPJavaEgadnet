@@ -1,5 +1,5 @@
-package controller;
+package view;
 
-public interface LoginObs {
+public interface LoginObserver {
     void performLoginAttempt(boolean result);
 }

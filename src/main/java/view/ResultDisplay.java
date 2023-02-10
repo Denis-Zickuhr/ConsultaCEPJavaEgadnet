@@ -3,10 +3,10 @@ import org.json.JSONObject;
 import javax.swing.*;
 import java.awt.*;
 
-public class ResultView extends JFrame {
+public class ResultDisplay extends JFrame {
 
     protected static JPanel content_pane = new JPanel();
-    public ResultView(JSONObject result) {
+    public ResultDisplay(JSONObject result) {
         loadStructures();
         loadElements(result);
         setContentPane(content_pane);

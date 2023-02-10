@@ -1,18 +1,22 @@
 package view;
 
 import controller.CEPSearchController;
-import controller.CEPSearchObs;
 import org.json.JSONObject;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.io.IOException;
 
-public class CEPSearchView extends JFrame implements CEPSearchObs {
+public class CEPSearchView extends JFrame implements CEPSearchObserver {
 
     protected static JPanel content_pane = new JPanel();
     protected static CEPSearchController controller;
+    protected static JTextField cepTextInput;
+    protected static JButton jButton_ok;
+
     public CEPSearchView() {
         loadStructures();
         loadElements();
@@ -20,14 +24,15 @@ public class CEPSearchView extends JFrame implements CEPSearchObs {
         content_pane.updateUI();
     }
 
-    void loadStructures(){
+    void loadStructures() {
         controller = CEPSearchController.getInstance();
         controller.attach(this);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        setSize(new Dimension(250,250));
+        setSize(new Dimension(250, 250));
         setLocationRelativeTo(this);
         setVisible(true);
     }
+
     void loadElements() {
 
         content_pane.setLayout(new GridBagLayout());
@@ -59,7 +64,23 @@ public class CEPSearchView extends JFrame implements CEPSearchObs {
         gbc.gridy = 1;
         gbc.gridx = 1;
         gbc.gridwidth = 2;
-        JTextField cepTextInput = new JTextField(8);
+        cepTextInput = new JTextField(8);
+        cepTextInput.addActionListener(e -> {
+            if (cepTextInput.getText().length() == 8)
+                try {
+                    CEPSearchController.getInstance().search(cepTextInput.getText());
+                } catch (IOException err) {
+                    throw new RuntimeException(err);
+                }
+        });
+
+        // For text input validation eg. max size and alphanumeric characters
+        cepTextInput.addKeyListener(new KeyAdapter() {
+            public void keyTyped(KeyEvent e) {
+                textUpdated(e);
+            }
+        });
+
         cepTextInput.setColumns(14);
         content_pane.add(cepTextInput, gbc);
 
@@ -70,20 +91,35 @@ public class CEPSearchView extends JFrame implements CEPSearchObs {
 
         JPanel buttonPanel = new JPanel();
 
-        JButton okbtn = new JButton("OK");
-        okbtn.addActionListener(evt ->{
+        jButton_ok = new JButton("OK");
+        jButton_ok.setEnabled(false);
+        jButton_ok.addActionListener(evt -> {
             try {
                 CEPSearchController.getInstance().search(cepTextInput.getText());
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         });
-        buttonPanel.add(okbtn);
+        buttonPanel.add(jButton_ok);
         content_pane.add(buttonPanel, gbc);
     }
 
     @Override
     public void search(JSONObject response) {
-        new ResultView(response);
+        new ResultDisplay(response);
     }
+
+    public void textUpdated(KeyEvent e) {
+        if (cepTextInput.getText().length() > 7 ){
+            e.consume();
+        }
+        try {
+            Integer.parseInt(String.valueOf(e.getKeyChar()));
+            jButton_ok.setEnabled(cepTextInput.getText().length() >= 7);
+        }catch (NumberFormatException err){
+            jButton_ok.setEnabled(cepTextInput.getText().length() >= 8);
+            e.consume();
+        }
+    }
+
 }

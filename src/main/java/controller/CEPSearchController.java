@@ -1,6 +1,7 @@
 package controller;
 
 import org.json.JSONObject;
+import view.CEPSearchObserver;
 
 import javax.cache.Cache;
 import javax.cache.CacheManager;
@@ -20,11 +21,11 @@ import java.util.List;
 public class CEPSearchController {
 
     private static CEPSearchController instance;
-
     private final Cache<String, String> cache;
-    protected final List<CEPSearchObs> observer = new ArrayList<>();
+    private final List<CEPSearchObserver> observer = new ArrayList<>();
 
     public CEPSearchController() {
+        // Cache instantiation
         CachingProvider cachingProvider = Caching.getCachingProvider();
         CacheManager cacheManager = cachingProvider.getCacheManager();
         MutableConfiguration<String, String> config = new MutableConfiguration<>();
@@ -39,7 +40,7 @@ public class CEPSearchController {
         return instance;
     }
 
-    public void attach(CEPSearchObs observer) {
+    public void attach(CEPSearchObserver observer) {
         this.observer.add(observer);
     }
 
@@ -50,8 +51,8 @@ public class CEPSearchController {
         if (!validateCep(request)) {
             response = new JSONObject(
                     "{" +
-                                "response" + ":" + "O CEP inserido é inválido!" + "," +
-                                "error_code" + ":" + "400" +
+                            "response" + ":" + "O CEP inserido é inválido!" + "," +
+                            "error_code" + ":" + "400" +
                             "}"
             );
         } else {
@@ -64,19 +65,14 @@ public class CEPSearchController {
             }
         }
 
-        for (CEPSearchObs obs : observer
+        for (CEPSearchObserver obs : observer
         ) {
             obs.search(response);
         }
     }
 
     private boolean validateCep(String cep) {
-        try {
-            int val = Integer.parseInt(cep);
-            return val > 9999999 & val < 99999999;
-        } catch (NumberFormatException e) {
-            return false;
-        }
+        return cep.length() == 8;
     }
 
     private JSONObject performRequest(String request) throws IOException {
