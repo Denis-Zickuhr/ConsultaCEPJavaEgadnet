@@ -18,20 +18,11 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CEPSearchController {
+public final class CEPSearchController {
 
     private static CEPSearchController instance;
-    private final Cache<String, String> cache;
+    private final Cache<String, String> cache = createCache();
     private final List<CEPSearchObserver> observer = new ArrayList<>();
-
-    public CEPSearchController() {
-        // Cache instantiation
-        CachingProvider cachingProvider = Caching.getCachingProvider();
-        CacheManager cacheManager = cachingProvider.getCacheManager();
-        MutableConfiguration<String, String> config = new MutableConfiguration<>();
-        config.setExpiryPolicyFactory(CreatedExpiryPolicy.factoryOf(Duration.FIVE_MINUTES));
-        cache = cacheManager.createCache("CEPS", config);
-    }
 
     public static CEPSearchController getInstance() {
         if (instance == null) {
@@ -42,6 +33,12 @@ public class CEPSearchController {
 
     public void attach(CEPSearchObserver observer) {
         this.observer.add(observer);
+    }
+
+    /**
+     * @author denis
+     */
+    public CEPSearchController() {
     }
 
     public void search(String request) throws IOException {
@@ -71,10 +68,16 @@ public class CEPSearchController {
         }
     }
 
+    /**
+     * CEP validation method
+     */
     private boolean validateCep(String cep) {
         return cep.length() == 8;
     }
 
+    /**
+     * Basic request handle method
+     */
     private JSONObject performRequest(String request) throws IOException {
         URL url = new URL(request);
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -90,11 +93,24 @@ public class CEPSearchController {
         return new JSONObject(content.toString());
     }
 
+    /**
+     * Caching validation method
+     */
     private void addToCache(String initiator, JSONObject response) {
         JSONObject responseCopy = new JSONObject(response.toString());
-        responseCopy.remove("from_cache");
         responseCopy.put("from_cache", "true");
         cache.putIfAbsent(initiator, String.valueOf(responseCopy));
+    }
+
+    /**
+     * Returns a ready for use Cache
+     */
+    private Cache<String, String> createCache() {
+        CachingProvider cachingProvider = Caching.getCachingProvider();
+        CacheManager cacheManager = cachingProvider.getCacheManager();
+        MutableConfiguration<String, String> config = new MutableConfiguration<>();
+        config.setExpiryPolicyFactory(CreatedExpiryPolicy.factoryOf(Duration.FIVE_MINUTES));
+        return cacheManager.createCache("CEP", config);
     }
 
 }

@@ -2,7 +2,8 @@ package view;
 
 import org.json.JSONObject;
 
-public interface CEPSearchObserver {
+public sealed interface CEPSearchObserver permits CEPSearchView {
+
     void search(JSONObject response);
 
 }

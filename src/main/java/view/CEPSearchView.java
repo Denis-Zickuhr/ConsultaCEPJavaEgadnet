@@ -10,22 +10,18 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 
-public class CEPSearchView extends JFrame implements CEPSearchObserver {
-
-    protected static JPanel content_pane = new JPanel();
-    protected static CEPSearchController controller;
-    protected static JTextField cepTextInput;
-    protected static JButton jButton_ok;
+/**
+ * @author denis
+ */
+public final class CEPSearchView extends JFrame implements CEPSearchObserver {
 
     public CEPSearchView() {
         loadStructures();
         loadElements();
-        setContentPane(content_pane);
-        content_pane.updateUI();
     }
 
     void loadStructures() {
-        controller = CEPSearchController.getInstance();
+        CEPSearchController controller = CEPSearchController.getInstance();
         controller.attach(this);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setSize(new Dimension(250, 250));
@@ -35,36 +31,38 @@ public class CEPSearchView extends JFrame implements CEPSearchObserver {
 
     void loadElements() {
 
+        JPanel content_pane = new JPanel();
+        JLabel infoLabel = new JLabel("Inform a \"CEP\":");
+        JLabel userLabel = new JLabel("CEP:");
+        JTextField cepTextInput = new JTextField(8);
+        JPanel buttonPanel = new JPanel();
+        JButton jButton_ok = new JButton("Search");
+        GridBagConstraints gridBagConstraints = new GridBagConstraints();
+
         content_pane.setLayout(new GridBagLayout());
 
         ((JComponent) getContentPane()).setBorder(
                 new EmptyBorder(5, 8, 8, 8));
 
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(3, 3, 3, 3);
-        gbc.gridy = 0;
-        gbc.gridx = 0;
-        gbc.gridwidth = 2;
-        gbc.anchor = GridBagConstraints.WEST;
-        JLabel infoLabel = new JLabel("Informe o CEP:");
+        gridBagConstraints.insets = new Insets(3, 3, 3, 3);
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.anchor = GridBagConstraints.WEST;
         infoLabel.setFont(new Font("SansSerif",
                 Font.BOLD, 14));
         infoLabel.setBorder(
                 new EmptyBorder(0, 0, 5, 0));
+        content_pane.add(infoLabel, gridBagConstraints);
 
-        content_pane.add(infoLabel, gbc);
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridwidth = 1;
+        content_pane.add(userLabel, gridBagConstraints);
 
-        gbc.gridy = 1;
-        gbc.gridx = 0;
-        gbc.gridwidth = 1;
-
-        JLabel userLabel = new JLabel("CEP:");
-        content_pane.add(userLabel, gbc);
-
-        gbc.gridy = 1;
-        gbc.gridx = 1;
-        gbc.gridwidth = 2;
-        cepTextInput = new JTextField(8);
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridwidth = 2;
         cepTextInput.addActionListener(e -> {
             if (cepTextInput.getText().length() == 8)
                 try {
@@ -73,25 +71,18 @@ public class CEPSearchView extends JFrame implements CEPSearchObserver {
                     throw new RuntimeException(err);
                 }
         });
-
-        // For text input validation eg. max size and alphanumeric characters
         cepTextInput.addKeyListener(new KeyAdapter() {
             public void keyTyped(KeyEvent e) {
-                textUpdated(e);
+                textUpdated(e, cepTextInput, jButton_ok);
             }
         });
-
         cepTextInput.setColumns(14);
-        content_pane.add(cepTextInput, gbc);
+        content_pane.add(cepTextInput, gridBagConstraints);
 
-        gbc.gridy = 2;
-        gbc.gridx = 1;
-        gbc.gridwidth = 2;
-        gbc.anchor = GridBagConstraints.EAST;
-
-        JPanel buttonPanel = new JPanel();
-
-        jButton_ok = new JButton("OK");
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.anchor = GridBagConstraints.EAST;
         jButton_ok.setEnabled(false);
         jButton_ok.addActionListener(evt -> {
             try {
@@ -101,7 +92,11 @@ public class CEPSearchView extends JFrame implements CEPSearchObserver {
             }
         });
         buttonPanel.add(jButton_ok);
-        content_pane.add(buttonPanel, gbc);
+        content_pane.add(buttonPanel, gridBagConstraints);
+
+        setContentPane(content_pane);
+        content_pane.updateUI();
+
     }
 
     @Override
@@ -109,15 +104,15 @@ public class CEPSearchView extends JFrame implements CEPSearchObserver {
         new ResultDisplay(response);
     }
 
-    public void textUpdated(KeyEvent e) {
-        if (cepTextInput.getText().length() > 7 ){
+    public void textUpdated(KeyEvent e, JTextField listener, JButton target) {
+        if (listener.getText().length() > 7 ){
             e.consume();
         }
         try {
             Integer.parseInt(String.valueOf(e.getKeyChar()));
-            jButton_ok.setEnabled(cepTextInput.getText().length() >= 7);
+            target.setEnabled(listener.getText().length() >= 7);
         }catch (NumberFormatException err){
-            jButton_ok.setEnabled(cepTextInput.getText().length() >= 8);
+            target.setEnabled(listener.getText().length() >= 8);
             e.consume();
         }
     }

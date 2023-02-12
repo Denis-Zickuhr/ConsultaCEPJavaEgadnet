@@ -1,5 +1,7 @@
 package view;
 
-public interface LoginObserver {
+public sealed interface LoginObserver permits LoginView {
+
     void performLoginAttempt(boolean result);
+
 }

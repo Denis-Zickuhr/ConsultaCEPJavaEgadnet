@@ -9,23 +9,32 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class UserRepository {
+/**
+ * @author denis
+ * User database functions
+ */
+public final class UserRepository implements Repository<UserEntity> {
 
     private final Map<Integer, UserEntity> users;
 
     public UserRepository() throws IOException {
         TextReader tx = new TextReader("public/users.txt");
         List<String> data = tx.returnAsList();
-        this.users = new HashMap<>(data.size()/3);
-        for (int i = 0; i < data.size(); i = i+3) {
-            this.users.put(Integer.valueOf(data.get(i)), new UserEntity(data.get(i+1), data.get(i+2)));
+        this.users = new HashMap<>(data.size() / 3);
+        for (int i = 0; i < data.size(); i = i + 3) {
+            this.users.put(Integer.valueOf(data.get(i)), new UserEntity(data.get(i + 1), data.get(i + 2)));
         }
     }
 
-    public Map<Integer, UserEntity> getAll(){
+    @Override
+    public Map<Integer, UserEntity> getAll() {
         return users;
     }
-    
+
+    /**
+     * @author denis
+     * Internal class used for reading .txt files (Line by Line)
+     */
     public static class TextReader {
         private final String filepath;
         private BufferedReader file;
@@ -58,7 +67,7 @@ public class UserRepository {
             close();
         }
 
-        public List<String> returnAsList(){
+        public List<String> returnAsList() {
             return txtList;
         }
 

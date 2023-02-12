@@ -8,11 +8,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LoginController {
+/**
+ * @author denis
+ */
+public final class LoginController {
 
-    static LoginController instance;
-
-    protected final List<LoginObserver> observer = new ArrayList<>();
+    private static LoginController instance;
+    private final List<LoginObserver> observer = new ArrayList<>();
 
     public static LoginController getInstance() {
         if (instance == null) {
@@ -25,16 +27,17 @@ public class LoginController {
         this.observer.add(observer);
     }
 
+    /**
+     * Tries to perform a login, send a boolean trough observed screens to perform
+     * or not a login
+     */
     public void performLoginAttempt(String userName, String password) throws IOException {
 
-        UserEntity user = new UserEntity(userName, password);
         UserRepository repo = new UserRepository();
-
-        boolean loginIsValid = repo.getAll().containsValue(user);
 
         for (LoginObserver obs : observer
         ) {
-            obs.performLoginAttempt(loginIsValid);
+            obs.performLoginAttempt(repo.getAll().containsValue(new UserEntity(userName, password)));
         }
     }
 
