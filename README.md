@@ -5,8 +5,13 @@ Execução: pode se exucutar clonando o projeto e rodando através da IDE, apart
 
 Ou baixar a pasta Artifacs que tem o .jar e txt e executar do mesmo modo!
 
-Senhas para acesso estão disponíveis no arquivo users.txt no seguinte padrão:
+Senhas para acesso estão disponíveis no arquivo users.txt no seguinte padrão: 
 
 id
 username
 password
+
+
+Mas pode se usar:
+admin
+admin
