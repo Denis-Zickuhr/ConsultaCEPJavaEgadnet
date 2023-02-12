@@ -18,6 +18,9 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author denis
+ */
 public final class CEPSearchController {
 
     private static CEPSearchController instance;
@@ -35,12 +38,12 @@ public final class CEPSearchController {
         this.observer.add(observer);
     }
 
-    /**
-     * @author denis
-     */
     public CEPSearchController() {
     }
 
+    /**
+     * handle "CEP" search procedure (query, caching, and display on screen function)
+     */
     public void search(String request) throws IOException {
 
         JSONObject response;
@@ -48,7 +51,7 @@ public final class CEPSearchController {
         if (!validateCep(request)) {
             response = new JSONObject(
                     "{" +
-                            "response" + ":" + "O CEP inserido é inválido!" + "," +
+                            "response" + ":" + "inserted \"CEP\" is invalid!" + "," +
                             "error_code" + ":" + "400" +
                             "}"
             );
