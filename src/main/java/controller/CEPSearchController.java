@@ -23,16 +23,8 @@ import java.util.List;
  */
 public final class CEPSearchController {
 
-    private static CEPSearchController instance;
     private final Cache<String, String> cache = createCache();
     private final List<CEPSearchObserver> observer = new ArrayList<>();
-
-    public static CEPSearchController getInstance() {
-        if (instance == null) {
-            instance = new CEPSearchController();
-        }
-        return instance;
-    }
 
     public void attach(CEPSearchObserver observer) {
         this.observer.add(observer);

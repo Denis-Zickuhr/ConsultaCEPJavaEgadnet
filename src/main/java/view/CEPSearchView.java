@@ -14,19 +14,22 @@ import java.io.IOException;
  * @author denis
  */
 public final class CEPSearchView extends JFrame implements CEPSearchObserver {
+    
+    private final CEPSearchController controller;
 
-    public CEPSearchView() {
+    public CEPSearchView(CEPSearchController controller) {
+        this.controller = controller;
         loadStructures();
         loadElements();
     }
 
     void loadStructures() {
-        CEPSearchController controller = CEPSearchController.getInstance();
         controller.attach(this);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setSize(new Dimension(250, 250));
         setLocationRelativeTo(this);
         setVisible(true);
+        setResizable(false);
     }
 
     void loadElements() {
@@ -66,7 +69,7 @@ public final class CEPSearchView extends JFrame implements CEPSearchObserver {
         cepTextInput.addActionListener(e -> {
             if (cepTextInput.getText().length() == 8)
                 try {
-                    CEPSearchController.getInstance().search(cepTextInput.getText());
+                    controller.search(cepTextInput.getText());
                 } catch (IOException err) {
                     throw new RuntimeException(err);
                 }
@@ -86,7 +89,7 @@ public final class CEPSearchView extends JFrame implements CEPSearchObserver {
         jButton_ok.setEnabled(false);
         jButton_ok.addActionListener(evt -> {
             try {
-                CEPSearchController.getInstance().search(cepTextInput.getText());
+                controller.search(cepTextInput.getText());
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

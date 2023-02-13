@@ -1,5 +1,6 @@
 package view;
 
+import controller.CEPSearchController;
 import controller.LoginController;
 
 import javax.swing.*;
@@ -10,19 +11,21 @@ import java.io.IOException;
 public final class LoginView extends JFrame implements LoginObserver {
 
     private static JLabel msg;
+    private final LoginController controller;
 
-    public LoginView() {
+    public LoginView(LoginController controller) {
+        this.controller = controller;
         loadStructures();
         loadElements();
     }
 
     void loadStructures() {
-        LoginController controller = LoginController.getInstance();
         controller.attach(this);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setSize(new Dimension(300, 300));
         setLocationRelativeTo(this);
         setVisible(true);
+        setResizable(false);
     }
 
     void loadElements() {
@@ -90,7 +93,7 @@ public final class LoginView extends JFrame implements LoginObserver {
         gridBagConstraints.anchor = GridBagConstraints.EAST;
         jButton_ok.addActionListener(evt -> {
             try {
-                LoginController.getInstance().performLoginAttempt(userTextInput.getText(), new String(passwordField.getPassword()));
+                controller.performLoginAttempt(userTextInput.getText(), new String(passwordField.getPassword()));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -121,7 +124,7 @@ public final class LoginView extends JFrame implements LoginObserver {
     public void performLoginAttempt(boolean result) {
         if (result) {
             this.dispose();
-            new CEPSearchView();
+            new CEPSearchView(new CEPSearchController());
         } else {
             msg.setText("User or Password are incorrect!");
         }

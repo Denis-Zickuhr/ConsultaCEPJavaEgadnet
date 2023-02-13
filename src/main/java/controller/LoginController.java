@@ -13,15 +13,7 @@ import java.util.List;
  */
 public final class LoginController {
 
-    private static LoginController instance;
     private final List<LoginObserver> observer = new ArrayList<>();
-
-    public static LoginController getInstance() {
-        if (instance == null) {
-            instance = new LoginController();
-        }
-        return instance;
-    }
 
     public void attach(LoginObserver observer) {
         this.observer.add(observer);

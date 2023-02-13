@@ -13,9 +13,10 @@ public final class ResultDisplay extends JFrame {
 
     void loadStructures(){
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        setSize(new Dimension(250,250));
+        setSize(new Dimension(200,250));
         setLocationRelativeTo(this);
         setVisible(true);
+        setResizable(false);
 
     }
     void loadElements(JSONObject result) {
